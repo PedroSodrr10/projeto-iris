@@ -1,0 +1,12 @@
+# Backups de edição (find-replace, editores)
+*.bak
+
+# Segredos — NUNCA versionar (a chave/credenciais do cliente ficam fora do plugin)
+secrets.json
+*.secret.json
+.env
+.env.*
+
+# Lixo de sistema
+.DS_Store
+Thumbs.db

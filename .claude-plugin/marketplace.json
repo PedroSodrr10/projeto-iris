@@ -1,0 +1,14 @@
+{
+  "name": "iris",
+  "owner": {
+    "name": "Pedro Sodré"
+  },
+  "description": "Marketplace da Íris — secretária executiva pessoal sobre o Claude.",
+  "plugins": [
+    {
+      "name": "iris",
+      "source": "./",
+      "description": "Íris, sua secretária executiva pessoal: agenda, e-mail, arquivos e contexto, 100% por conversa em português."
+    }
+  ]
+}
