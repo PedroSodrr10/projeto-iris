@@ -10,3 +10,6 @@ secrets.json
 # Lixo de sistema
 .DS_Store
 Thumbs.db
+
+# Clone órfão (tooling intermediário, fora do escopo do plugin)
+projeto-iris/

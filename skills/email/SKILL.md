@@ -11,7 +11,7 @@ description: >
   WhatsApp). Lê a caixa e escreve rascunhos livremente; **enviar** pede o sinal verde
   do cliente.
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
 ---
 
 # E-mail
@@ -21,14 +21,67 @@ em português, sem jargão. Aja — entregue triagem e rascunhos prontos.
 
 ## O que fazer
 
-- **Triagem:** leia a caixa e separe o que é urgente do que pode esperar.
-  Identifique o que exige o cliente e o que você mesma resolve.
-- **Briefing:** para "o que importa na minha caixa", entregue um resumo curto do que
-  chegou e do que precisa de ação.
-- **Rascunho:** para os e-mails que precisam de resposta, **escreva o rascunho** no
-  tom do cliente (siga a identidade/voz dele quando existir; na dúvida, conservador).
-  Ajuste o tom quando ele pedir ("mais firme", "mais cordial").
-- **Contexto:** ligue cada e-mail a pessoas e projetos da memória antes de responder.
+### 1. Triagem — sempre antes de qualquer resumo
+
+Ao acessar a caixa, **classifique cada mensagem em uma destas 4 categorias**
+antes de apresentar qualquer coisa:
+
+| Categoria | Critério |
+|---|---|
+| 🔴 **Prioridade** | Pede ação ou resposta; remetente conhecido e relevante; prazo próximo |
+| 🟡 **Relevante** | Informação útil mas sem urgência; não exige ação imediata |
+| ⚪ **Ruído** | Newsletter, promoção, notificação automática, fatura rotineira |
+| ⚠️ **Suspeito** | Sinais de phishing, golpe ou remetente inconsistente (ver abaixo) |
+
+**Por padrão, apresente apenas 🔴 e 🟡.** Se não houver nada nessas categorias,
+informe isso ("sua caixa está limpa por agora") em vez de listar lixo. Para ver
+⚪ (ruído), o cliente precisa pedir. Para ⚠️ (suspeitos), sempre avise antes de
+mostrar o conteúdo.
+
+### 2. Briefing
+
+Para "o que importa na minha caixa", entregue:
+- Contagem por categoria (ex.: "3 prioritários, 2 relevantes, 12 de ruído — deixei
+  de lado por enquanto").
+- Resumo dos 🔴 com o que precisa de ação.
+- Resumo dos 🟡 se o cliente quiser detalhes.
+- Lista dos ⚠️ com aviso claro, se houver.
+
+### 3. Sinalização de suspeitos (phishing / golpe)
+
+Sinalize um e-mail como ⚠️ **suspeito** quando identificar dois ou mais destes
+sinais no conteúdo que o connector expõe:
+
+- **Urgência artificial:** "último aviso", "sua conta será bloqueada", "aja agora".
+- **Link com domínio diferente do remetente:** ex. e-mail de "banco.com" com link
+  para "seguro-acesso-247.net".
+- **Pedido de dado sensível:** senha, CPF, número de cartão, código de confirmação.
+- **Remetente inconsistente:** nome exibido não combina com o domínio real
+  (ex.: "Suporte Apple <suporte-apple@mail-promo.ru>").
+- **Erros de português / texto genérico:** "Prezado cliente", erros de concordância,
+  tradução mecânica óbvia.
+- **Domínio com caractere semelhante:** "paypa1.com", "bancobrasil.net.br".
+
+**Regra absoluta:** ao identificar e-mail suspeito, **nunca clique nem acesse**
+nenhum link — nem para "verificar" o destino. Informe o cliente com clareza, mostre
+os sinais que identificou e recomende descartar sem abrir links. Nunca emita veredito
+definitivo de "é golpe" ou "é seguro" — apenas relate os sinais; a decisão final é
+do cliente.
+
+> Se o connector Gmail expuser labels do tipo `SPAM` ou `CATEGORY_PROMOTIONS`, use-os
+> como primeiro sinal de ruído/suspeito antes da análise por conteúdo.
+
+### 4. Rascunho
+
+Para e-mails que precisam de resposta, **escreva o rascunho** no tom do cliente
+(siga a identidade/voz quando existir; na dúvida, conservador). Ajuste o tom quando
+ele pedir ("mais firme", "mais cordial"). Rascunho ≠ envio — entregue para aprovação.
+
+### 5. Contexto
+
+Ligue cada e-mail relevante a pessoas e projetos da memória antes de resumir ou
+rascunhar. Se o remetente for desconhecido, registre na memória após o cliente
+confirmar quem é.
 
 ## Sinal verde (o que pode e o que pede aprovação)
 
@@ -38,13 +91,20 @@ em português, sem jargão. Aja — entregue triagem e rascunhos prontos.
   rascunho e espere o "pode enviar".
 - 🟡 **Pede aprovação:** apagar ou arquivar em massa.
 
-## Se o Gmail não estiver disponível aqui
+## Se o Gmail não estiver conectado
 
-O acesso ao e-mail depende da conta do Gmail estar conectada. Se ela não estiver,
-não devolva erro técnico nem diga que "não encontrou nada": diga com gentileza algo
-como *"não estou conseguindo acessar seu e-mail agora"* e ofereça um caminho — pedir
-para reconectar a conta quando ele puder, ou seguir trabalhando com o que ele mesmo
-trouxer (o texto de um e-mail colado, um rascunho que ele queira ajustar).
+Quando o e-mail não estiver acessível, responda com gentileza — sem erro técnico,
+sem "não encontrei nada". Use algo como:
+
+> "Parece que ainda não tenho acesso à sua caixa de entrada. É bem rápido de ligar:
+> 1. No **Claude Desktop**, clique em **Connectors** (ou Integrações) no menu lateral.
+> 2. Encontre **Gmail** na lista e clique em **Conectar**.
+> 3. Faça login com a conta Google que você usa para e-mail.
+>
+> Assim que conectar, me chame de volta e já dou uma olhada na sua caixa!"
+
+Enquanto isso, se ele quiser trabalhar com um e-mail específico, pode colar o texto
+aqui e você ajuda a rascunhar a resposta ou extrair o que importa.
 
 ## Alimente a memória
 Registre pendências, decisões tomadas por e-mail, novos contatos e seus papéis.

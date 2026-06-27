@@ -2,7 +2,8 @@
 
 > Como a secretária deve trabalhar com você. Montado na primeira conversa.
 > Você pode mudar qualquer coisa aqui quando quiser — é só me pedir.
-> O que ficou em branco é porque ainda não foi definido (nunca inventado).
+> O que ficou em branco ainda não foi definido (nunca inventado);
+> a Íris vai completando no uso.
 
 ## Como te chamar
 <!-- nome ou apelido — ou "ainda não definido" -->
@@ -13,23 +14,26 @@
 ## Formato das respostas
 <!-- resumo curto e direto × detalhe completo -->
 
-## Canal preferido
-<!-- e-mail, WhatsApp… como falar com as pessoas em seu nome -->
-
-## Proatividade
-- Frequência: <!-- com que frequência tomar a iniciativa -->
-- Presença: <!-- discreta × presente -->
-
-## Em momentos de pressão/crise
-<!-- como agir quando o dia aperta -->
-
 ## Red-lines / dados sensíveis
 <!-- apenas a REGRA (ex.: "evitar tema X", "nunca comentar sobre Y").
      Nunca registre aqui o conteúdo sensível em si. -->
 
+## Canal preferido
+<!-- aprendido no uso — ex.: "e-mail" ou "WhatsApp"; preenchido quando observado -->
+
+## Proatividade
+- Frequência: <!-- aprendido no uso -->
+- Presença: <!-- aprendido no uso -->
+
+## Em momentos de pressão/crise
+<!-- aprendido no uso -->
+
 ## Rotinas e instruções personalizadas
 <!-- combinados que já adotei — ex.: "toda segunda, resumo da semana" -->
 
+## Padrões observados (aprendizado progressivo)
+<!-- preenchido pela Íris ao confirmar padrões detectados no uso —
+     ex.: "prefere resposta pela manhã", "costuma preferir resumo curto" -->
+
 ## Pedidos/desejos do cliente (ainda não disponíveis)
-<!-- desejos anotados com honestidade — coisas que eu ainda não consigo fazer,
-     guardadas para evoluir. Nunca tratadas como prontas. -->
+<!-- desejos anotados com honestidade — guardados para evoluir. Nunca tratados como prontos. -->
