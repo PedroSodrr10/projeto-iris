@@ -7,6 +7,25 @@ contexto — age no que pode, pede o sinal verde no que importa e nunca inventa.
 > Este README é para o **operador** (quem instala e configura). O cliente final
 > não instala nem configura nada: ele apenas conversa com a secretária.
 
+## 🚀 Comece aqui (em 1 minuto)
+
+**O que você precisa:**
+- **Claude Desktop** com **Cowork** ativo (plano Claude Pro, ~US$20/mês).
+- Uma **conta Google** (Gmail + Calendar) para a Íris ver sua agenda e e-mail.
+- Uma **pasta no seu PC** onde ela pode organizar arquivos e guardar contexto.
+
+**Como começar, depois de instalado:**
+1. **Autorize os acessos** quando a Íris pedir (Gmail e Google Calendar) — é uma vez só.
+2. **Abra uma conversa e fale em português, do seu jeito.** Sem comandos, sem menu.
+   Na primeira conversa ela faz algumas perguntas pra te conhecer.
+3. **Experimente pedir:**
+   - *"Como tá minha agenda hoje?"*
+   - *"Tem algo urgente no meu e-mail?"*
+   - *"Acha o contrato da empresa X na minha pasta."*
+
+**Bom saber:** a Íris **lê à vontade**, mas pede seu **sinal verde** antes de agir
+(enviar, mover, reagendar, apagar). Ela nunca inventa — se não sabe, ela diz.
+
 ## O que vem neste plugin
 - **Persona base sempre-ativa** — comportamento, tom (PT-BR, sem jargão) e política
   de aprovação ("ler é livre; agir pede sinal verde"). Injetada a cada sessão por um
