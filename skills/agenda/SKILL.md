@@ -12,7 +12,7 @@ description: >
   organização). Lê a agenda livremente; marcar, reagendar ou confirmar pede o sinal
   verde do cliente.
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
 ---
 
 # Agenda e tempo

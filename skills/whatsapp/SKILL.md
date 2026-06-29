@@ -11,7 +11,7 @@ description: >
   a mensagem da Maria". É o canal de WHATSAPP/zap — não é e-mail (esse é a skill de
   e-mail). O envio é 1:1, uma pessoa por vez, só a pedido, e nunca em massa.
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
 ---
 
 # WhatsApp (leitura + envio controlado)

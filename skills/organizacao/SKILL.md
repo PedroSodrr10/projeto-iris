@@ -11,7 +11,7 @@ description: >
   memória). Buscar e ler é livre; mover, renomear e arquivar pedem o sinal verde;
   apagar sempre pede aprovação.
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
 ---
 
 # Organização
