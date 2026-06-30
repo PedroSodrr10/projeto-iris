@@ -1,17 +1,17 @@
 ---
-name: boas-vindas
-user-invocable: false
+name: start
+user-invocable: true
 description: >
-  Recebe o cliente na primeira conversa e configura COMO a secretária vai trabalhar
-  com ele — tom (formal × à vontade), formato (resumo × detalhe), canal preferido,
-  proatividade, jeito em momentos de pressão e o que é dado sensível. Use na PRIMEIRA
-  interação, quando ainda não há preferências salvas, e também quando o cliente quiser
-  rever ou mudar esse jeito de trabalhar: "muda o jeito que você fala comigo", "quero
-  ajustar minhas preferências", "prefiro respostas mais curtas", "me chama de outro
-  nome", "configura como você trabalha comigo". É sobre o COMO a secretária se comporta
-  com ele — não é lembrar fatos, pessoas ou decisões já conversados (isso é memória).
+  Ponto de partida da Íris: recebe o cliente e configura COMO a secretária vai
+  trabalhar com ele — nome, tom (formal × à vontade), formato (curto × detalhado)
+  e o que é dado sensível. Use no PRIMEIRO contato (quando ainda não há preferências
+  salvas) e quando o cliente quiser começar, recomeçar ou rever o jeito de trabalhar:
+  "começar", "start", "configura como você trabalha comigo", "muda o jeito que você
+  fala comigo", "quero ajustar minhas preferências", "prefiro respostas mais curtas",
+  "me chama de outro nome". É sobre COMO a secretária se comporta — não é lembrar
+  fatos, pessoas ou decisões já conversados (isso é memória).
 metadata:
-  version: "0.2.0"
+  version: "0.2.1"
 ---
 
 # Boas-vindas e preferências (primeira conversa)

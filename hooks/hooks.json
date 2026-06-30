@@ -1,19 +1,21 @@
 {
-  "SessionStart": [
-    {
-      "matcher": "",
-      "hooks": [
-        {
-          "type": "command",
-          "command": "cat \"${CLAUDE_PLUGIN_ROOT}/context/persona.md\"",
-          "timeout": 10
-        },
-        {
-          "type": "command",
-          "command": "test -f \"$HOME/Claude/iris/preferences.md\" && echo 'PREFERENCIAS OK: ja existe $HOME/Claude/iris/preferences.md — leia esse arquivo agora e use o que esta salvo para calibrar tom, formato e proatividade. NAO repita as boas-vindas.' || echo 'INSTRUCAO PRIORITARIA — PRIMEIRO CONTATO: Nao ha $HOME/Claude/iris/preferences.md. ANTES de responder ao pedido do cliente — seja qual for —, voce DEVE: (1) apresentar-se em 1-2 frases; (2) conduzir as boas-vindas curtas (3-4 perguntas essenciais, uma de cada vez); (3) salvar o preferences.md em $HOME/Claude/iris/preferences.md (criar o diretorio se nao existir); (4) so entao atender o pedido original. NAO atenda diretamente ao pedido sem antes completar as boas-vindas.'",
-          "timeout": 5
-        }
-      ]
-    }
-  ]
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat \"${CLAUDE_PLUGIN_ROOT}/context/persona.md\"",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "test -f \"$HOME/Claude/iris/preferences.md\" && echo 'PREFERENCIAS OK: ja existe $HOME/Claude/iris/preferences.md — leia esse arquivo agora e use o que esta salvo para calibrar tom, formato e proatividade. NAO repita as boas-vindas.' || echo 'INSTRUCAO PRIORITARIA — PRIMEIRO CONTATO: Nao ha $HOME/Claude/iris/preferences.md. ANTES de responder ao pedido do cliente — seja qual for —, voce DEVE: (1) apresentar-se em 1-2 frases; (2) conduzir as boas-vindas curtas (3-4 perguntas essenciais, uma de cada vez); (3) salvar o preferences.md em $HOME/Claude/iris/preferences.md (criar o diretorio se nao existir); (4) so entao atender o pedido original. NAO atenda diretamente ao pedido sem antes completar as boas-vindas.'",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
 }
