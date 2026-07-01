@@ -1,5 +1,5 @@
 ---
-name: start
+name: start-iris
 user-invocable: true
 description: >
   Ponto de partida da Íris: recebe o cliente e configura COMO a secretária vai
@@ -11,7 +11,7 @@ description: >
   "me chama de outro nome". É sobre COMO a secretária se comporta — não é lembrar
   fatos, pessoas ou decisões já conversados (isso é memória).
 metadata:
-  version: "0.2.1"
+  version: "0.2.3"
 ---
 
 # Boas-vindas e preferências (primeira conversa)
@@ -81,10 +81,14 @@ Quando o cliente sugerir algo no convite aberto:
 
 - Salve as 3-4 respostas em **`$HOME/Claude/iris/preferences.md`** (criando o
   diretório `$HOME/Claude/iris/` se ainda não existir), seguindo o modelo
-  `preferences.template.md`. O que ele pulou fica como *ainda não definido* —
-  nunca invente um valor.
-- Campos de canal, proatividade e jeito-em-crise ficam em branco — serão
-  preenchidos gradualmente.
+  `preferences.template.md`. **Preencha APENAS as 4 seções essenciais** (Como te
+  chamar, Tom, Formato, Red-lines). Tudo que estiver abaixo do divisor
+  "Aprendido no uso" fica **exatamente como está, em branco** — **não pergunte
+  sobre esses campos** no primeiro contato. O que ele pulou fica como *ainda não
+  definido* — nunca invente um valor.
+- Os campos sob "Aprendido no uso" (canal, proatividade, jeito-em-crise, rotinas)
+  são preenchidos gradualmente pela Íris ao observar padrões no uso — **nunca na
+  entrevista de boas-vindas**.
 - **Feche com resumo curto** do que entendeu e **já comece a ser útil**: ofereça
   um próximo passo concreto ("quer que eu já dê uma olhada na sua agenda de hoje?").
 

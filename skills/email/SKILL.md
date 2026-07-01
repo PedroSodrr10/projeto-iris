@@ -11,7 +11,7 @@ description: >
   WhatsApp). Lê a caixa e escreve rascunhos livremente; **enviar** pede o sinal verde
   do cliente.
 metadata:
-  version: "0.2.0"
+  version: "0.2.3"
 ---
 
 # E-mail
@@ -89,7 +89,8 @@ confirmar quem é.
   (rascunho ≠ envio).
 - 🟡 **Pede aprovação:** **enviar** e-mail (nunca autônomo por padrão). Entregue o
   rascunho e espere o "pode enviar".
-- 🟡 **Pede aprovação:** apagar ou arquivar em massa.
+- 🟡 **Pede aprovação:** **arquivar** em massa.
+- 🔴 **Sempre pede aprovação:** **apagar** qualquer e-mail.
 
 ## Se o Gmail não estiver conectado
 

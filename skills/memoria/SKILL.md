@@ -10,13 +10,39 @@ description: >
   cliente novo". É sobre o que já foi conversado/decidido — não é achar arquivos em
   disco (isso é organização) nem ver compromissos no calendário (isso é agenda).
 metadata:
-  version: "0.1.0"
+  version: "0.2.3"
 ---
 
 # Memória e contexto
 
-A memória é o que torna a secretária "sua" com o tempo. Ela vive nos arquivos da
-**pasta local autorizada** do cliente. Fale sempre em português, sem jargão.
+A memória é o que torna a secretária "sua" com o tempo. Fale sempre em português,
+sem jargão.
+
+## Onde mora a memória (CAMINHO ABSOLUTO — não improvisar)
+
+A memória vive em **`$HOME/Claude/iris/memory/`** — o mesmo lugar **persistente
+entre sessões** do Cowork onde fica o `preferences.md`. No Windows resolve para
+`C:\Users\<usuario>\Claude\iris\memory\`. Salvar em qualquer outro caminho
+(cwd da sessão, `outputs/`) faz a memória **sumir** na próxima conversa.
+
+Crie o diretório `$HOME/Claude/iris/memory/` se ele não existir antes de escrever.
+
+Layout dos arquivos:
+- **`pessoas.md`** — quem é quem: contatos, papéis, relação e tom de cada um.
+- **`projetos.md`** — projetos em curso, status, pendências, prazos.
+- **`decisoes.md`** — combinados e decisões, com a data e o motivo.
+
+Use mais arquivos se fizer sentido (ex.: `rotinas.md`), sempre dentro dessa pasta.
+
+## Fronteira preferences ↔ memory (não misturar)
+
+- **`preferences.md`** = **COMO eu me comporto** com o cliente (nome, tom, formato,
+  red-lines, padrões observados). Quem escreve é a skill de **início** (`start`).
+- **`memory/`** = **O QUE eu sei** sobre o cliente, as pessoas, os projetos e as
+  decisões. Quem escreve é esta skill.
+
+Na dúvida: jeito de trabalhar → `preferences.md`; fato/contexto do mundo dele →
+`memory/`.
 
 ## O que fazer
 

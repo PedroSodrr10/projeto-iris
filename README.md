@@ -16,9 +16,11 @@ contexto — age no que pode, pede o sinal verde no que importa e nunca inventa.
 
 **Como começar, depois de instalado:**
 1. **Autorize os acessos** quando a Íris pedir (Gmail e Google Calendar) — é uma vez só.
-2. **Abra uma conversa e fale em português, do seu jeito.** Sem comandos, sem menu.
-   Na primeira conversa ela faz algumas perguntas pra te conhecer.
-3. **Experimente pedir:**
+2. **Comece pelo `/start-iris`.** Na primeira conversa, digite `/start-iris`: a Íris se
+   apresenta e faz 3-4 perguntas rápidas pra te conhecer. (Se você só mandar um
+   "oi" antes de configurar, ela também inicia a acolhida sozinha.)
+3. **Depois é só falar em português, do seu jeito** — sem comandos, sem menu.
+4. **Experimente pedir:**
    - *"Como tá minha agenda hoje?"*
    - *"Tem algo urgente no meu e-mail?"*
    - *"Acha o contrato da empresa X na minha pasta."*
@@ -29,7 +31,9 @@ contexto — age no que pode, pede o sinal verde no que importa e nunca inventa.
 ## O que vem neste plugin
 - **Persona base sempre-ativa** — comportamento, tom (PT-BR, sem jargão) e política
   de aprovação ("ler é livre; agir pede sinal verde"). Injetada a cada sessão por um
-  hook `SessionStart`.
+  hook `SessionStart`, que também carrega preferências e memória salvas.
+- **Comando `/start-iris`** — ponto de partida visível: acolhe o cliente e configura
+  como a Íris vai trabalhar (nome, tom, formato, red-lines).
 - **Skills de capacidade** — agenda, e-mail, organização, WhatsApp (leitura +
   envio controlado) e memória (disparam por conversa, sem comando).
 - **Connectors declarados** — Gmail e Google Calendar (autorização é feita uma vez
@@ -57,7 +61,7 @@ identidade local. **Nenhum segredo do cliente entra neste repositório.**
 3. Em *Personal plugins*, clique no **"+"** → **Add marketplace** → **Add from a
    repository**.
 4. Cole a URL do repositório **público** deste marketplace e confirme.
-5. Instale o plugin **secretaria** da lista.
+5. Instale o plugin **Íris** da lista.
 
 > O marketplace precisa estar num repositório GitHub **público** — a sincronização
 > pela interface do Cowork não autentica repositórios privados.
@@ -66,7 +70,7 @@ identidade local. **Nenhum segredo do cliente entra neste repositório.**
 ```bash
 # A partir de uma cópia local deste repositório:
 claude plugin marketplace add ./secretaria-plugin
-claude plugin install secretaria@secretaria-ia
+claude plugin install iris@iris
 ```
 
 ## Connectors

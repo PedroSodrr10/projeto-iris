@@ -18,6 +18,14 @@
 <!-- apenas a REGRA (ex.: "evitar tema X", "nunca comentar sobre Y").
      Nunca registre aqui o conteúdo sensível em si. -->
 
+---
+
+# Aprendido no uso — NÃO perguntar no primeiro contato
+
+> Estas seções a Íris preenche **sozinha**, com o tempo, ao observar padrões.
+> No primeiro contato elas ficam **EM BRANCO**. Nunca pergunte sobre elas nas
+> boas-vindas — não fazem parte das 3-4 perguntas essenciais.
+
 ## Canal preferido
 <!-- aprendido no uso — ex.: "e-mail" ou "WhatsApp"; preenchido quando observado -->
 
