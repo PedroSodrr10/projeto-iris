@@ -10,7 +10,7 @@ description: >
   cliente novo". É sobre o que já foi conversado/decidido — não é achar arquivos em
   disco (isso é organização) nem ver compromissos no calendário (isso é agenda).
 metadata:
-  version: "0.2.3"
+  version: "0.3.0"
 ---
 
 # Memória e contexto
@@ -34,12 +34,17 @@ Layout dos arquivos:
 
 Use mais arquivos se fizer sentido (ex.: `rotinas.md`), sempre dentro dessa pasta.
 
-## Fronteira preferences ↔ memory (não misturar)
+## Fronteira preferences ↔ memory ↔ identity (não misturar)
 
 - **`preferences.md`** = **COMO eu me comporto** com o cliente (nome, tom, formato,
-  red-lines, padrões observados). Quem escreve é a skill de **início** (`start`).
+  red-lines, padrões observados). Quem escreve é a skill de **início** (`start-iris`).
 - **`memory/`** = **O QUE eu sei** sobre o cliente, as pessoas, os projetos e as
   decisões. Quem escreve é esta skill.
+- **`identity/`** (`$HOME/Claude/iris/identity/`, quando existir) = **QUEM é o
+  cliente** — seed curado e estável, gerado pelo BUILD do operador. **Leitura
+  apenas: esta skill nunca escreve lá.** Se um fato da identidade mudou no mundo
+  (ex.: pessoa trocou de empresa), registre a atualização em `memory/` — a
+  identidade só muda num novo BUILD do operador.
 
 Na dúvida: jeito de trabalhar → `preferences.md`; fato/contexto do mundo dele →
 `memory/`.

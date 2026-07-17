@@ -11,6 +11,11 @@
           },
           {
             "type": "command",
+            "command": "IDY=\"$HOME/Claude/iris/identity\"; if [ -d \"$IDY\" ]; then echo \"IDENTIDADE PREMIUM ATIVA ($IDY) — o conteudo abaixo SOBRESCREVE tom, prioridades e politica padrao da persona base:\"; for f in voice-and-style.md north-star.md delegation.md; do if [ -f \"$IDY/$f\" ]; then echo \"--- $f ---\"; cat \"$IDY/$f\"; fi; done; echo \"--- demais arquivos de identidade (leia sob demanda ANTES de agir no tema — ex.: relationships.md antes de contatar alguem, priorities.md ao planejar o dia) ---\"; ls -1 \"$IDY\" 2>/dev/null; fi",
+            "timeout": 10
+          },
+          {
+            "type": "command",
             "command": "PREF=\"$HOME/Claude/iris/preferences.md\"; MEM=\"$HOME/Claude/iris/memory\"; if [ -f \"$PREF\" ]; then echo \"PREFERENCIAS OK: existe $PREF — leia agora e use para calibrar tom, formato e proatividade.\"; fi; if [ -d \"$MEM\" ]; then echo \"MEMORIA DISPONIVEL em $MEM — leia o que for relevante ANTES de agir (memoria antes de perguntar). Indice:\"; ls -1 \"$MEM\" 2>/dev/null; fi",
             "timeout": 5
           }
