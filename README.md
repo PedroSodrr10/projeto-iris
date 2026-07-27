@@ -15,7 +15,7 @@ que importa e **nunca inventa**.
 
 | Requisito | Detalhe |
 |---|---|
-| **Windows 10/11 64 bits** | o instalador automático é para Windows |
+| **Windows 10/11 64 bits** ou **macOS** | há instalador para os dois |
 | **Claude Desktop com Cowork** | plano Claude Pro |
 | **Conta Google** | Gmail + Calendar, para agenda e e-mail |
 | **Celular com WhatsApp** | opcional, só se for usar o canal do zap |
@@ -29,7 +29,15 @@ instalador já traz tudo dentro dele.
 
 ### Caminho recomendado — instalador automático
 
-Abra o **PowerShell** e cole esta linha:
+**No macOS**, abra o **Terminal** e cole:
+
+```bash
+curl -fsSL https://github.com/PedroSodrr10/projeto-iris/releases/latest/download/IrisInstaller-mac.zip -o /tmp/iris.zip && unzip -oq /tmp/iris.zip -d /tmp/iris && bash /tmp/iris/IrisInstaller/install.sh
+```
+
+O Node é baixado na hora, já na arquitetura certa (Apple Silicon ou Intel).
+
+**No Windows**, abra o **PowerShell** e cole:
 
 ```powershell
 $z="$env:TEMP\Iris.zip"; iwr https://github.com/PedroSodrr10/projeto-iris/releases/latest/download/IrisInstaller.zip -OutFile $z; Expand-Archive $z "$env:TEMP\Iris" -Force; Get-ChildItem "$env:TEMP\Iris" -Recurse | Unblock-File; powershell -ExecutionPolicy Bypass -File "$env:TEMP\Iris\IrisInstaller\install.ps1"

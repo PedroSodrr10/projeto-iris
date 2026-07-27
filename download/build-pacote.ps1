@@ -1,11 +1,19 @@
 ﻿# build-pacote.ps1 — roda na MÁQUINA DO OPERADOR (Pedro).
-# Monta dist\IrisInstaller.zip com tudo que a máquina do cliente precisa:
-# plugin da Íris + whatsapp-mcp (node_modules pronto) + node.exe portátil + install.ps1.
+# Monta o pacote de instalação da Íris para Windows OU macOS.
 #
 # O .zip gerado NÃO é versionado (dist/ está no .gitignore): ele é publicado
 # como asset de Release, para não inflar este repositório — que é o marketplace
 # clonado por quem instala a Íris.
+#
+# Diferença entre os alvos:
+#   win  — leva node.exe embutido (x64) e install.ps1
+#   mac  — NÃO leva Node (baixado na instalação, conforme Apple Silicon × Intel)
+#          e exclui @img/sharp-win32-x64, que é binário nativo do Windows.
+#          O sharp é dispensável: o baileys o importa com catch e só o usa para
+#          miniatura de imagem, coisa que este MCP (só texto) nunca faz.
 param(
+    [ValidateSet('win', 'mac')]
+    [string]$Target = 'win',
     [string]$PluginDir = (Split-Path $PSScriptRoot -Parent),
     [string]$McpDir    = 'E:\Dev\whatsapp-mcp',
     [string]$OutDir    = "$PSScriptRoot\dist",
@@ -26,11 +34,12 @@ if (-not (Test-Path "$PluginDir\.claude-plugin\marketplace.json")) {
 if (-not (Test-Path "$McpDir\node_modules")) {
     throw "node_modules ausente em $McpDir — rode 'npm install' lá antes de empacotar."
 }
-if (-not (Test-Path "$McpDir\node_modules\@img\sharp-win32-x64")) {
-    throw "sharp-win32-x64 ausente — o node_modules precisa ter sido instalado num Windows x64."
-}
-foreach ($f in @('install.ps1', 'LEIA-ME.md')) {
+$instalador = if ($Target -eq 'mac') { 'install.sh' } else { 'install.ps1' }
+foreach ($f in @($instalador, 'LEIA-ME.md')) {
     if (-not (Test-Path "$PSScriptRoot\$f")) { throw "Arquivo do instalador ausente: $f" }
+}
+if ($Target -eq 'win' -and -not (Test-Path "$McpDir\node_modules\@img\sharp-win32-x64")) {
+    throw "sharp-win32-x64 ausente — para o alvo 'win' o node_modules precisa vir de um Windows x64."
 }
 
 $stage = Join-Path $OutDir 'IrisInstaller'
@@ -42,36 +51,57 @@ New-Item -ItemType Directory -Force $stage | Out-Null
 # Atenção: exclui TANTO o $OutDir atual QUANTO o dist\ padrão — um -OutDir
 # apontado para fora do repo não impede que o dist\ padrão exista com um zip
 # de 54 MB dentro, que seria engolido pelo pacote.
-Write-Host '[1/5] Copiando plugin...'
+Write-Host "[1/5] Copiando plugin... (alvo: $Target)"
 $distPadrao = Join-Path $PSScriptRoot 'dist'
 robocopy $PluginDir "$stage\plugin" /E /XD .git "$PluginDir\projeto-iris" $OutDir $distPadrao | Out-Null
 if ($LASTEXITCODE -ge 8) { throw "robocopy do plugin falhou (código $LASTEXITCODE)" }
 
 # --- 2. whatsapp-mcp (sem .git e SEM session/ — o cliente pareia o celular dele) ---
 Write-Host '[2/5] Copiando whatsapp-mcp (com node_modules)...'
-robocopy $McpDir "$stage\whatsapp-mcp" /E /XD .git session | Out-Null
+$excluirMcp = @('.git', 'session')
+if ($Target -eq 'mac') {
+    # binário nativo win32 não roda no Mac; é a única dependência nativa da árvore
+    $excluirMcp += (Join-Path $McpDir 'node_modules\@img')
+}
+robocopy $McpDir "$stage\whatsapp-mcp" /E /XD $excluirMcp | Out-Null
 if ($LASTEXITCODE -ge 8) { throw "robocopy do whatsapp-mcp falhou (código $LASTEXITCODE)" }
+if ($Target -eq 'mac' -and (Test-Path "$stage\whatsapp-mcp\node_modules\@img")) {
+    throw 'Exclusao do @img falhou — o pacote mac nao pode levar binario win32.'
+}
 
-# --- 3. Node portátil (só o node.exe da LTS mais recente) ---
-Write-Host '[3/5] Baixando Node LTS portátil...'
+# --- 3. Node ---
+Write-Host '[3/5] Resolvendo Node LTS...'
 $index = Invoke-RestMethod 'https://nodejs.org/dist/index.json'
 $lts = $index | Where-Object { $_.lts } | Select-Object -First 1
 $ver = $lts.version
 Write-Host "      Node $ver ($($lts.lts))"
-$zip = Join-Path $env:TEMP "node-$ver-win-x64.zip"
-Invoke-WebRequest "https://nodejs.org/dist/$ver/node-$ver-win-x64.zip" -OutFile $zip
-$extract = Join-Path $env:TEMP 'iris-node-extract'
-if (Test-Path $extract) { Remove-Item $extract -Recurse -Force }
-Expand-Archive $zip -DestinationPath $extract
-New-Item -ItemType Directory -Force "$stage\node" | Out-Null
-Copy-Item "$extract\node-$ver-win-x64\node.exe" "$stage\node\node.exe"
-Remove-Item $extract -Recurse -Force
-Remove-Item $zip -Force
+if ($Target -eq 'mac') {
+    # No Mac o binário é baixado na instalação: arm64 e x64 são incompatíveis,
+    # e embutir os dois dobraria o pacote sem necessidade.
+    Set-Content -Path "$stage\node-version.txt" -Value $ver -NoNewline -Encoding ascii
+    Write-Host '      Alvo mac: versao anotada, download acontece na instalacao.'
+} else {
+    $zip = Join-Path $env:TEMP "node-$ver-win-x64.zip"
+    Invoke-WebRequest "https://nodejs.org/dist/$ver/node-$ver-win-x64.zip" -OutFile $zip
+    $extract = Join-Path $env:TEMP 'iris-node-extract'
+    if (Test-Path $extract) { Remove-Item $extract -Recurse -Force }
+    Expand-Archive $zip -DestinationPath $extract
+    New-Item -ItemType Directory -Force "$stage\node" | Out-Null
+    Copy-Item "$extract\node-$ver-win-x64\node.exe" "$stage\node\node.exe"
+    Remove-Item $extract -Recurse -Force
+    Remove-Item $zip -Force
+}
 
 # --- 4. instalador + instruções (+ identidade, se for pacote premium) ---
-Write-Host '[4/5] Copiando install.ps1 e LEIA-ME...'
-Copy-Item "$PSScriptRoot\install.ps1" $stage
+Write-Host "[4/5] Copiando $instalador e LEIA-ME..."
+Copy-Item "$PSScriptRoot\$instalador" $stage
 Copy-Item "$PSScriptRoot\LEIA-ME.md" $stage
+if ($Target -eq 'mac') {
+    # Garante LF: com CRLF o bash morre em "$'\r': command not found".
+    $p = Join-Path $stage 'install.sh'
+    $txt = [System.IO.File]::ReadAllText($p) -replace "`r`n", "`n"
+    [System.IO.File]::WriteAllText($p, $txt, (New-Object System.Text.UTF8Encoding $false))
+}
 
 $premium = $false
 if ($IdentityDir) {
@@ -95,13 +125,17 @@ if ($IdentityDir) {
 # Nome diferente quando ha identidade: pacote premium carrega dados do cliente
 # e NUNCA pode ser publicado como Release publico.
 Write-Host '[5/5] Compactando...'
-$nome = if ($premium) { 'IrisInstaller-PRIVADO.zip' } else { 'IrisInstaller.zip' }
-$zipOut = Join-Path $OutDir $nome
+$sufixoOS = if ($Target -eq 'mac') { '-mac' } else { '' }
+$sufixoPriv = if ($premium) { '-PRIVADO' } else { '' }
+$zipOut = Join-Path $OutDir "IrisInstaller$sufixoOS$sufixoPriv.zip"
 if (Test-Path $zipOut) { Remove-Item $zipOut -Force }
 Compress-Archive -Path $stage -DestinationPath $zipOut
 $mb = [math]::Round((Get-Item $zipOut).Length / 1MB, 1)
 Write-Host ''
 Write-Host "Pacote pronto: $zipOut ($mb MB)"
+if ($Target -eq 'mac') {
+    Write-Host 'Alvo macOS. O zip nao preserva bit de execucao — instale com: bash install.sh'
+}
 if ($premium) {
     Write-Warning 'PACOTE PRIVADO — contem a identidade do cliente.'
     Write-Warning 'NAO publique como Release. Entregue por AnyDesk / canal direto.'

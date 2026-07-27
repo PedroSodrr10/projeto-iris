@@ -11,9 +11,28 @@ um Node portátil vão todos dentro do `.zip`.
 
 | Arquivo | Onde roda | O que faz |
 |---|---|---|
-| `build-pacote.ps1` | máquina do operador | gera `dist/IrisInstaller.zip` |
-| `install.ps1` | máquina do cliente | instala tudo (vai dentro do zip) |
+| `build-pacote.ps1` | máquina do operador | gera o pacote (Windows ou macOS) |
+| `install.ps1` | máquina do cliente (Windows) | instala tudo (vai dentro do zip) |
+| `install.sh` | máquina do cliente (macOS) | idem, versão Mac |
 | `LEIA-ME.md` | — | este guia |
+
+## Windows × macOS
+
+| | Windows | macOS |
+|---|---|---|
+| Instalador | `install.ps1` | `install.sh` (rode com `bash install.sh`) |
+| Node | `node.exe` embutido | baixado na instalação, conforme o chip |
+| Tamanho do pacote | ~54 MB | ~13 MB |
+| `sharp` | incluído | **removido** |
+
+O `sharp` é o **único** módulo nativo da árvore — todo o resto é JavaScript
+puro e roda igual nos dois sistemas. Ele pode sair do pacote Mac porque o
+baileys o importa com `catch` e só o usa para miniatura de imagem; este MCP
+só manda texto. Verificado: sem `@img`, o MCP carrega com as 6 ferramentas.
+
+No Mac o Node **não** vai embutido: `arm64` (Apple Silicon) e `x64` (Intel) são
+binários incompatíveis, e embarcar os dois dobraria o pacote. O `install.sh`
+lê `node-version.txt`, detecta o chip com `uname -m` e baixa o certo.
 
 > **O `.zip` não é versionado** (`download/dist/` está no `.gitignore`). São
 > ~54 MB, e este repositório é o marketplace clonado por quem instala a Íris —
@@ -24,7 +43,13 @@ um Node portátil vão todos dentro do `.zip`.
 ## 1. Gerar o pacote
 
 ```powershell
+# Windows (padrão)
 powershell -ExecutionPolicy Bypass -File .\download\build-pacote.ps1
+
+# macOS
+powershell -ExecutionPolicy Bypass -File .\download\build-pacote.ps1 -Target mac
+
+# Premium: some -IdentityDir '<staging do cliente>\Claude\iris\identity'
 ```
 
 Refaça sempre que o plugin ou o `whatsapp-mcp` mudarem.

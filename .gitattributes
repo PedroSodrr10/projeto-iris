@@ -1,0 +1,6 @@
+# Scripts de shell PRECISAM de LF. Com CRLF o bash falha com erros do tipo
+# "$'\r': command not found" — e o instalador do Mac quebraria na primeira linha.
+*.sh text eol=lf
+
+# Scripts do PowerShell ficam com CRLF (padrão do Windows)
+*.ps1 text eol=crlf
