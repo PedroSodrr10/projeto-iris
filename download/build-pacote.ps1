@@ -129,7 +129,13 @@ $sufixoOS = if ($Target -eq 'mac') { '-mac' } else { '' }
 $sufixoPriv = if ($premium) { '-PRIVADO' } else { '' }
 $zipOut = Join-Path $OutDir "IrisInstaller$sufixoOS$sufixoPriv.zip"
 if (Test-Path $zipOut) { Remove-Item $zipOut -Force }
-Compress-Archive -Path $stage -DestinationPath $zipOut
+# Compress-Archive grava as entradas com "\" (bug conhecido do .NET no Windows),
+# o que viola a spec do ZIP (exige "/") e faz o unzip do Mac/Linux emitir
+# "appears to use backslashes as path separators" ao extrair. bsdtar, embutido
+# no Windows 10/11 em System32, grava "/" corretamente — troca 1:1, mesmo uso.
+$tarExe = Join-Path $env:WINDIR 'System32\tar.exe'
+& $tarExe -a -c -f $zipOut -C $OutDir 'IrisInstaller'
+if ($LASTEXITCODE -ne 0) { throw "tar.exe falhou ao compactar (codigo $LASTEXITCODE)" }
 $mb = [math]::Round((Get-Item $zipOut).Length / 1MB, 1)
 Write-Host ''
 Write-Host "Pacote pronto: $zipOut ($mb MB)"
