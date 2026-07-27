@@ -54,15 +54,48 @@ if ($LASTEXITCODE -ne 0) { throw 'Falha ao registrar o marketplace local da Íri
 & $claude plugin install iris@iris
 if ($LASTEXITCODE -ne 0) { throw 'Falha ao instalar o plugin iris.' }
 
-Write-Host '== [4/5] Registrando o MCP do WhatsApp =='
+Write-Host '== [4/6] Registrando o MCP do WhatsApp =='
 # remove registro anterior, se houver, e recria apontando pro node embutido
 & $claude mcp remove --scope user whatsapp
 & $claude mcp add --scope user whatsapp "$InstallDir\node\node.exe" "$InstallDir\whatsapp-mcp\index.js"
-if ($LASTEXITCODE -ne 0) { throw 'Falha ao registrar o MCP do WhatsApp.' }
+if ($LASTEXITCODE -ne 0) {
+    Write-Warning 'Falha ao registrar o MCP do WhatsApp pelo CLI.'
+    Write-Warning "Fallback: registre manualmente apontando para $InstallDir\whatsapp-mcp\index.js"
+    Write-Warning 'A instalacao continua — o WhatsApp fica pendente, o resto funciona.'
+}
+
+# --- identidade do cliente (premium) ---
+# Gerada pelo build-identidade na maquina do OPERADOR e embarcada no pacote.
+# Sem ela, a Iris cai no fluxo free (/start-iris). Com ela, abre a primeira
+# conversa ja calibrada. Nunca sobrescreve silenciosamente: faz backup antes.
+Write-Host '== [5/6] Camada de identidade =='
+$idySrc = Join-Path $payload 'identity'
+$idyDst = Join-Path $env:USERPROFILE 'Claude\iris\identity'
+if (Test-Path $idySrc) {
+    if (Test-Path $idyDst) {
+        $bak = Join-Path $env:USERPROFILE "Claude\iris\_backups\identity-$((Get-Item $idyDst).LastWriteTime.ToString('yyyy-MM-dd-HHmm'))"
+        New-Item -ItemType Directory -Force (Split-Path $bak -Parent) | Out-Null
+        Move-Item $idyDst $bak
+        Write-Host "   Identidade anterior movida para: $bak"
+    }
+    New-Item -ItemType Directory -Force (Split-Path $idyDst -Parent) | Out-Null
+    robocopy $idySrc $idyDst /E | Out-Null
+    if ($LASTEXITCODE -ge 8) { throw "Falha ao publicar a identidade (robocopy $LASTEXITCODE)" }
+    # marcador de 1a apresentacao precisa estar AUSENTE para a saudacao calibrada ocorrer
+    Remove-Item (Join-Path $idyDst '.apresentado') -ErrorAction SilentlyContinue
+    Write-Host "   Identidade publicada em: $idyDst"
+} else {
+    Write-Host '   Sem identidade no pacote — cliente segue o fluxo free (/start-iris).'
+}
 
 Write-Host ''
-Write-Host '== [5/5] Instalação concluída =='
-Write-Host 'Falta apenas: login na conta Claude (no app) e autorizar Gmail/Calendar na GUI.'
+Write-Host '== [6/6] Instalação concluída =='
+Write-Host ''
+Write-Host 'Verifique antes de seguir:'
+Write-Host "   $claude plugin list      (iris deve aparecer como enabled)"
+Write-Host "   $claude mcp list         (whatsapp deve aparecer)"
+Write-Host ''
+Write-Host 'Falta, na interface: login na conta Claude e autorizar Gmail/Calendar.'
 Write-Host ''
 $resp = Read-Host 'Parear o WhatsApp agora? Abre o QR code no navegador [S/n]'
 if ($resp -eq '' -or $resp -match '^[sS]') {

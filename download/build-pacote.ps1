@@ -8,7 +8,11 @@
 param(
     [string]$PluginDir = (Split-Path $PSScriptRoot -Parent),
     [string]$McpDir    = 'E:\Dev\whatsapp-mcp',
-    [string]$OutDir    = "$PSScriptRoot\dist"
+    [string]$OutDir    = "$PSScriptRoot\dist",
+    # Identidade do cliente ja gerada pelo build-identidade (opcional).
+    # Aponte para a pasta identity/ publicada no staging daquele cliente.
+    # Presente => pacote PREMIUM, personalizado, NAO reutilizavel entre clientes.
+    [string]$IdentityDir
 )
 $ErrorActionPreference = 'Stop'
 
@@ -34,10 +38,13 @@ if (Test-Path $stage) { Remove-Item $stage -Recurse -Force }
 New-Item -ItemType Directory -Force $stage | Out-Null
 
 # --- 1. plugin da Íris ---
-# Exclui: .git, o clone órfão projeto-iris\ e o próprio dist\ (evita recursão,
-# já que este script mora dentro do repositório do plugin).
+# Exclui: .git, o clone órfão projeto-iris\ e as pastas de artefato.
+# Atenção: exclui TANTO o $OutDir atual QUANTO o dist\ padrão — um -OutDir
+# apontado para fora do repo não impede que o dist\ padrão exista com um zip
+# de 54 MB dentro, que seria engolido pelo pacote.
 Write-Host '[1/5] Copiando plugin...'
-robocopy $PluginDir "$stage\plugin" /E /XD .git "$PluginDir\projeto-iris" $OutDir | Out-Null
+$distPadrao = Join-Path $PSScriptRoot 'dist'
+robocopy $PluginDir "$stage\plugin" /E /XD .git "$PluginDir\projeto-iris" $OutDir $distPadrao | Out-Null
 if ($LASTEXITCODE -ge 8) { throw "robocopy do plugin falhou (código $LASTEXITCODE)" }
 
 # --- 2. whatsapp-mcp (sem .git e SEM session/ — o cliente pareia o celular dele) ---
@@ -61,17 +68,43 @@ Copy-Item "$extract\node-$ver-win-x64\node.exe" "$stage\node\node.exe"
 Remove-Item $extract -Recurse -Force
 Remove-Item $zip -Force
 
-# --- 4. instalador + instruções ---
+# --- 4. instalador + instruções (+ identidade, se for pacote premium) ---
 Write-Host '[4/5] Copiando install.ps1 e LEIA-ME...'
 Copy-Item "$PSScriptRoot\install.ps1" $stage
 Copy-Item "$PSScriptRoot\LEIA-ME.md" $stage
 
+$premium = $false
+if ($IdentityDir) {
+    if (-not (Test-Path $IdentityDir)) { throw "IdentityDir nao encontrado: $IdentityDir" }
+    # sanidade: o build-identidade publica estes arquivos; sem eles o hook nao calibra
+    foreach ($req in @('voice-and-style.md', 'north-star.md', 'delegation.md')) {
+        if (-not (Test-Path (Join-Path $IdentityDir $req))) {
+            throw "Identidade incompleta: falta '$req' em $IdentityDir. Rode o build-identidade ate a ativacao."
+        }
+    }
+    if (Test-Path (Join-Path $IdentityDir '.apresentado')) {
+        throw "A identidade em $IdentityDir tem o marcador .apresentado — ela ja foi usada numa sessao. Apague o marcador antes de empacotar, senao o cliente perde a saudacao calibrada."
+    }
+    robocopy $IdentityDir "$stage\identity" /E /XD .git | Out-Null
+    if ($LASTEXITCODE -ge 8) { throw "robocopy da identidade falhou (código $LASTEXITCODE)" }
+    $premium = $true
+    Write-Host "      Identidade embarcada (pacote PREMIUM, especifico deste cliente)"
+}
+
 # --- 5. zip final ---
+# Nome diferente quando ha identidade: pacote premium carrega dados do cliente
+# e NUNCA pode ser publicado como Release publico.
 Write-Host '[5/5] Compactando...'
-$zipOut = Join-Path $OutDir 'IrisInstaller.zip'
+$nome = if ($premium) { 'IrisInstaller-PRIVADO.zip' } else { 'IrisInstaller.zip' }
+$zipOut = Join-Path $OutDir $nome
 if (Test-Path $zipOut) { Remove-Item $zipOut -Force }
 Compress-Archive -Path $stage -DestinationPath $zipOut
 $mb = [math]::Round((Get-Item $zipOut).Length / 1MB, 1)
 Write-Host ''
 Write-Host "Pacote pronto: $zipOut ($mb MB)"
-Write-Host 'Publique-o como asset de Release (ver LEIA-ME.md) — nao commite o zip.'
+if ($premium) {
+    Write-Warning 'PACOTE PRIVADO — contem a identidade do cliente.'
+    Write-Warning 'NAO publique como Release. Entregue por AnyDesk / canal direto.'
+} else {
+    Write-Host 'Pacote generico. Pode ser publicado como asset de Release (ver LEIA-ME.md).'
+}
