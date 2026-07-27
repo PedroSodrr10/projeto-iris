@@ -1,11 +1,13 @@
-# Instalador da Íris
+# Instalador da Íris — guia do operador
 
-Pacote autossuficiente para instalar a Íris na máquina de um cliente:
-**não precisa de Node, git nem conta no GitHub** lá. O plugin, o MCP do
-WhatsApp (com `node_modules` já resolvido) e um Node portátil vão todos dentro
-do `.zip`.
+Esta pasta contém o **empacotador**. Se você quer apenas *instalar e usar* a
+Íris, o guia certo é o [README na raiz](../README.md).
 
-## Arquivos desta pasta
+O pacote é autossuficiente: a máquina de destino **não precisa de Node, Git nem
+conta no GitHub**. Plugin, MCP do WhatsApp (com `node_modules` já resolvido) e
+um Node portátil vão todos dentro do `.zip`.
+
+## Arquivos
 
 | Arquivo | Onde roda | O que faz |
 |---|---|---|
@@ -13,12 +15,13 @@ do `.zip`.
 | `install.ps1` | máquina do cliente | instala tudo (vai dentro do zip) |
 | `LEIA-ME.md` | — | este guia |
 
-> O `.zip` **não é versionado** (`dist/` está no `.gitignore`). Ele tem ~54 MB e
-> este repositório é o marketplace clonado por quem instala a Íris — commitar o
-> binário aqui faria todo mundo baixar 54 MB a mais, para sempre. O lugar certo
-> dele é como **asset de Release**.
+> **O `.zip` não é versionado** (`download/dist/` está no `.gitignore`). São
+> ~54 MB, e este repositório é o marketplace clonado por quem instala a Íris —
+> commitar o binário faria todo mundo baixar 54 MB a mais, para sempre, sem
+> possibilidade de remover sem reescrever o histórico. O lugar dele é como
+> **asset de Release**.
 
-## 1. Gerar o pacote (na sua máquina)
+## 1. Gerar o pacote
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\download\build-pacote.ps1
@@ -26,65 +29,52 @@ powershell -ExecutionPolicy Bypass -File .\download\build-pacote.ps1
 
 Refaça sempre que o plugin ou o `whatsapp-mcp` mudarem.
 
+O script falha cedo se algo estiver faltando (`node_modules` ausente, plugin
+inválido). Ele exclui do pacote: `.git`, o clone órfão `projeto-iris/`, o
+próprio `dist/` e a pasta `session/` do WhatsApp — **a sessão pareada do
+operador nunca vai junto**.
+
+Parâmetros, se precisar:
+
+| Parâmetro | Padrão |
+|---|---|
+| `-PluginDir` | pasta pai deste script (a raiz do repo) |
+| `-McpDir` | `E:\Dev\whatsapp-mcp` |
+| `-OutDir` | `download\dist` |
+
 ## 2. Publicar como Release
 
-No GitHub → **Releases** → *Draft a new release* → crie uma tag (ex.: `v0.3.2`)
-→ arraste o `dist/IrisInstaller.zip` para os *assets* → *Publish*.
+GitHub → **Releases** → *Draft a new release* → tag nova (ex.: `v0.3.3`) →
+arraste o `dist/IrisInstaller.zip` para os assets → *Publish*.
 
-A URL fica estável neste formato:
+A URL de instalação **não muda entre versões**, porque aponta para o release
+mais recente:
 
 ```
-https://github.com/PedroSodrr10/projeto-iris/releases/download/v0.3.2/IrisInstaller.zip
+https://github.com/PedroSodrr10/projeto-iris/releases/latest/download/IrisInstaller.zip
 ```
 
-## 3. Instalar na máquina do cliente
+Publicou uma versão nova? A linha de instalação do README já pega ela sozinha —
+não é preciso atualizar a documentação.
 
-### Opção A (recomendada) — uma linha no PowerShell
+## 3. Instalar no cliente
 
-Sem transferir arquivo: usa a internet do cliente e não trava a apresentação.
-Troque `<URL>` pela URL do Release.
+O comando está no [README](../README.md#1-instalação). Dois cenários:
 
-```powershell
-$z="$env:TEMP\Iris.zip"; iwr <URL> -OutFile $z; Expand-Archive $z "$env:TEMP\Iris" -Force; Get-ChildItem "$env:TEMP\Iris" -Recurse | Unblock-File; powershell -ExecutionPolicy Bypass -File "$env:TEMP\Iris\IrisInstaller\install.ps1"
-```
+- **Com internet boa:** a linha do README baixa direto do Release. Preferível —
+  usa a banda do cliente e não trava a apresentação.
+- **Sem internet / AnyDesk:** transfira o zip por **Ctrl+C / Ctrl+V** do AnyDesk
+  (ou a sessão de *Transferência de arquivos*), extraia e rode `install.ps1`.
+  54 MB pelo relay levam alguns minutos — **faça antes de o cliente estar
+  assistindo**.
 
-O `Unblock-File` não é opcional: o Windows marca arquivos baixados da internet
-e o script seria bloqueado na hora de rodar.
+## Checklist pós-instalação
 
-### Opção B (offline / fallback) — transferência do AnyDesk
+O `install.ps1` cobre plugin e WhatsApp. O resto é clique seu na interface:
 
-1. **Ctrl+C** no zip na sua máquina, **Ctrl+V** na do cliente (ou a sessão
-   dedicada de *Transferência de arquivos*).
-2. Extraia (botão direito → Extrair tudo).
-3. Na pasta extraída:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\install.ps1
-```
-
-> 54 MB pelo relay do AnyDesk levam alguns minutos. **Faça antes de o cliente
-> estar assistindo**, se tiver acesso à máquina mais cedo.
-
-## O que o `install.ps1` faz
-
-1. Copia plugin, `whatsapp-mcp` e Node portátil para `C:\Iris`.
-2. Instala o Claude Code pelo instalador nativo, se ainda não existir.
-3. Registra o marketplace **a partir da pasta local** e instala `iris@iris`.
-4. Registra o MCP do WhatsApp apontando para o `node.exe` embutido.
-5. Oferece o pareamento por QR code.
-
-## O que continua manual (por design)
-
-- **Login na conta Claude** — o cliente loga no app.
-- **Connectors Gmail / Google Calendar** — autorização OAuth na GUI.
-- **QR do WhatsApp** — celular do cliente: WhatsApp → Dispositivos vinculados →
-  Vincular dispositivo.
-
-## Desinstalar
-
-```powershell
-claude plugin uninstall iris@iris
-claude plugin marketplace remove iris
-claude mcp remove --scope user whatsapp
-Remove-Item C:\Iris -Recurse -Force
-```
+- [ ] Cliente logado na conta Claude
+- [ ] Gmail e Google Calendar autorizados
+- [ ] WhatsApp pareado (se premium)
+- [ ] Identidade publicada em `%USERPROFILE%\Claude\iris\identity\`, se for premium
+- [ ] Scheduled Task do briefing criada com a frase exata
+- [ ] Primeira mensagem calibrada confirmada

@@ -1,106 +1,280 @@
-# Íris — plugin para o Claude Cowork
+# Íris — sua secretária executiva pessoal
 
-Íris, sua secretária executiva pessoal, entregue como **plugin do Claude Cowork**. O cliente
-**só conversa em português**; a Íris cuida de agenda, e-mail, arquivos e
-contexto — age no que pode, pede o sinal verde no que importa e nunca inventa.
+Íris é uma **secretária executiva** que roda dentro do Claude Desktop. Você
+**só conversa em português** — sem comandos, sem menus. Ela cuida da agenda, do
+e-mail, dos arquivos e do contexto: age no que pode, pede seu **sinal verde** no
+que importa e **nunca inventa**.
 
-> Este README é para o **operador** (quem instala e configura). O cliente final
-> não instala nem configura nada: ele apenas conversa com a secretária.
+- **Instalar** → [1. Instalação](#1-instalação)
+- **Configurar** → [2. Configuração](#2-configuração)
+- **Começar a usar** → [3. Primeiros passos](#3-primeiros-passos)
 
-## 🚀 Comece aqui (em 1 minuto)
+---
 
-**O que você precisa:**
-- **Claude Desktop** com **Cowork** ativo (plano Claude Pro, ~US$20/mês).
-- Uma **conta Google** (Gmail + Calendar) para a Íris ver sua agenda e e-mail.
-- Uma **pasta no seu PC** onde ela pode organizar arquivos e guardar contexto.
+## Antes de começar
 
-**Como começar, depois de instalado:**
-1. **Autorize os acessos** quando a Íris pedir (Gmail e Google Calendar) — é uma vez só.
-2. **Comece pelo `/start-iris`.** Na primeira conversa, digite `/start-iris`: a Íris se
-   apresenta e faz 3-4 perguntas rápidas pra te conhecer. (Se você só mandar um
-   "oi" antes de configurar, ela também inicia a acolhida sozinha.)
-3. **Depois é só falar em português, do seu jeito** — sem comandos, sem menu.
-4. **Experimente pedir:**
-   - *"Como tá minha agenda hoje?"*
-   - *"Tem algo urgente no meu e-mail?"*
-   - *"Acha o contrato da empresa X na minha pasta."*
+| Requisito | Detalhe |
+|---|---|
+| **Windows 10/11 64 bits** | o instalador automático é para Windows |
+| **Claude Desktop com Cowork** | plano Claude Pro |
+| **Conta Google** | Gmail + Calendar, para agenda e e-mail |
+| **Celular com WhatsApp** | opcional, só se for usar o canal do zap |
 
-**Bom saber:** a Íris **lê à vontade**, mas pede seu **sinal verde** antes de agir
-(enviar, mover, reagendar, apagar). Ela nunca inventa — se não sabe, ela diz.
+Você **não precisa** instalar Node.js, Git, nem ter conta no GitHub. O
+instalador já traz tudo dentro dele.
 
-## O que vem neste plugin
-- **Persona base sempre-ativa** — comportamento, tom (PT-BR, sem jargão) e política
-  de aprovação ("ler é livre; agir pede sinal verde"). Injetada a cada sessão por um
-  hook `SessionStart`, que também carrega preferências e memória salvas.
-- **Comando `/start-iris`** — ponto de partida visível: acolhe o cliente e configura
-  como a Íris vai trabalhar (nome, tom, formato, red-lines).
-- **Skills de capacidade** — agenda, e-mail, organização, WhatsApp (leitura +
-  envio controlado) e memória (disparam por conversa, sem comando).
-- **Connectors declarados** — Gmail e Google Calendar (autorização é feita uma vez
-  pelo operador no momento da instalação).
+---
 
-## Arquitetura em duas camadas
-| Camada | O que é | Onde vive | Muda por cliente? |
-|---|---|---|---|
-| **Plugin** (este repositório) | persona + skills + connectors | repo GitHub público | ❌ nunca |
-| **Identidade + memória** | perfil, relações, prioridades, voz, memória | pasta local autorizada no PC do cliente | ✅ sim |
+## 1. Instalação
 
-O plugin é **idêntico para todos**. Toda variação por cliente vive na camada de
-identidade local. **Nenhum segredo do cliente entra neste repositório.**
+### Caminho recomendado — instalador automático
 
-> As ferramentas de **build/config** (gerar a identidade do cliente a partir do
-> questionário) **não fazem parte deste plugin**: são o plano do operador, mantido
-> num plugin **privado, separado**. Assim o cliente só encontra capacidades de
-> conversa — nunca skills de configuração.
+Abra o **PowerShell** e cole esta linha:
 
-## Instalação (operador)
+```powershell
+$z="$env:TEMP\Iris.zip"; iwr https://github.com/PedroSodrr10/projeto-iris/releases/latest/download/IrisInstaller.zip -OutFile $z; Expand-Archive $z "$env:TEMP\Iris" -Force; Get-ChildItem "$env:TEMP\Iris" -Recurse | Unblock-File; powershell -ExecutionPolicy Bypass -File "$env:TEMP\Iris\IrisInstaller\install.ps1"
+```
 
-### Pela interface do Claude Desktop (recomendado)
-1. Abra o **Claude Desktop** → **Cowork**.
-2. **Customize → Plugins**.
-3. Em *Personal plugins*, clique no **"+"** → **Add marketplace** → **Add from a
-   repository**.
-4. Cole a URL do repositório **público** deste marketplace e confirme.
-5. Instale o plugin **Íris** da lista.
+Em ~2 minutos ele:
 
-> O marketplace precisa estar num repositório GitHub **público** — a sincronização
-> pela interface do Cowork não autentica repositórios privados.
+1. copia os arquivos para `C:\Iris`;
+2. instala o **Claude Code** pelo instalador oficial, se ainda não existir;
+3. registra o marketplace **a partir da pasta local** e instala o plugin `iris`;
+4. registra o **MCP do WhatsApp** apontando para o Node que vem embutido;
+5. pergunta se você quer **parear o WhatsApp** por QR code.
 
-### Por linha de comando (desenvolvimento)
+> **Por que o `Unblock-File`?** O Windows marca todo arquivo baixado da internet
+> e bloquearia o script. Sem isso a instalação para no primeiro passo.
+
+Prefere baixar na mão? Pegue o `IrisInstaller.zip` na
+[página de releases](https://github.com/PedroSodrr10/projeto-iris/releases/latest),
+extraia e rode:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\install.ps1
+```
+
+### Caminho alternativo — só o plugin, pela interface
+
+Se você **não vai usar o WhatsApp**, dá para instalar só o plugin, sem baixar nada:
+
+1. Claude Desktop → **Cowork**
+2. **Customize → Plugins**
+3. Em *Personal plugins*, **"+" → Add marketplace → Add from a repository**
+4. Cole `https://github.com/PedroSodrr10/projeto-iris` e confirme
+5. Instale **Íris** na lista
+
+### Caminho de desenvolvimento
+
+A partir de uma cópia local deste repositório:
+
 ```bash
-# A partir de uma cópia local deste repositório:
 claude plugin marketplace add ./secretaria-plugin
 claude plugin install iris@iris
 ```
 
-## Connectors
-Os connectors são autorizados **uma vez** pelo operador (etapa da instalação "luva").
-Declarados em `.mcp.json`:
+---
+
+## 2. Configuração
+
+### 2.1 Autorizar Gmail e Google Calendar (obrigatório)
+
+Esses acessos **não são automatizáveis** — a autorização é sua, na interface,
+uma vez só.
+
+No Claude Desktop, vá em **Connectors / Integrações** e autorize **Gmail** e
+**Google Calendar** com a sua conta.
+
+Para conferir se funcionou, pergunte à Íris: *"o que tem na minha agenda hoje?"*
+
+Os dois connectors já vêm declarados no `.mcp.json` do plugin:
 
 | Connector | Para quê |
 |---|---|
-| **Gmail** | ler a caixa, triagem, rascunhar respostas |
+| **Gmail** | ler a caixa, triar, rascunhar respostas |
 | **Google Calendar** | ver a agenda, preparar reuniões, propor horários |
 
-**Organização de arquivos** funciona na **pasta local autorizada** do cliente. O
-Google Drive pode ser ligado depois pelo diretório de connectors do Cowork, se o
-cliente usar Drive.
+> **Google Drive** não vem declarado. A organização de arquivos funciona na
+> **pasta local** que você autorizar. Se você usa Drive, ele pode ser ligado
+> depois pelo diretório de connectors do Cowork.
 
-## Limites desta fase
-- **WhatsApp = leitura + envio controlado.** A secretária lê conversas para extrair
-  contexto e envia mensagens **1:1, uma pessoa por vez, só a pedido** — nunca em
-  massa, com ritmo humano (≤5 msg/min, ~100/dia, grupos só pequenos). Recusa o
-  disparo em massa mesmo se pedido, para proteger a conta do cliente.
-- Nenhuma ação que altera o mundo (enviar, mover, apagar, reagendar) acontece sem
-  aprovação, salvo o que o cliente delegar na própria política.
+### 2.2 Parear o WhatsApp (opcional)
 
-## Estrutura
+Se você respondeu **S** no final da instalação, o QR já apareceu no navegador.
+Para parear depois:
+
+```powershell
+cd C:\Iris\whatsapp-mcp
+..\node\node.exe pair.js
+```
+
+No celular: **WhatsApp → ⋮ → Dispositivos vinculados → Vincular dispositivo** e
+aponte a câmera para o QR.
+
+A sessão fica salva em `C:\Iris\whatsapp-mcp\session` — não precisa repetir.
+**Reinicie o Claude** para as ferramentas aparecerem.
+
+> **Proteção de conta:** a Íris envia **1:1, uma pessoa por vez, só a pedido**,
+> com ritmo humano (≤5 mensagens/min, ~100/dia). Ela **recusa disparo em massa
+> mesmo se você pedir** — é o que protege seu número de bloqueio.
+
+### 2.3 Briefing automático (opcional)
+
+Um resumo do dia (e-mail + agenda) que chega sozinho, sem você pedir.
+
+1. No Cowork, painel **Scheduled** → **+ New task**
+2. No prompt da tarefa, escreva literalmente:
+   **"gerar o briefing agendado da Íris"**
+3. Cadência sugerida: dias úteis, de manhã
+
+> A frase exata importa: é o único gatilho que aciona o briefing. Falar
+> *"me resume o dia"* na conversa não dispara essa tarefa — nesse caso a Íris
+> responde normalmente, lendo agenda e e-mail na hora.
+>
+> A tarefa roda **quando o computador está ligado e o Claude aberto**. É um
+> "te recebe quando você abre o app", não um despertador com horário garantido.
+
+---
+
+## 3. Primeiros passos
+
+### Comece pelo `/start-iris`
+
+Na primeira conversa, digite:
+
+```
+/start-iris
+```
+
+A Íris se apresenta e faz **3-4 perguntas rápidas** para te conhecer: como te
+chamar, o tom que você prefere (formal ou à vontade), o formato das respostas
+(curto ou detalhado) e o que é **assunto sensível** para você.
+
+Se você só mandar um "oi" antes de configurar, ela inicia a acolhida sozinha.
+
+Quer mudar algo depois? É só falar: *"prefiro respostas mais curtas"*,
+*"me chama de Pedro"*. Ela ajusta e guarda.
+
+### Depois, é só conversar
+
+Sem comandos, sem menu. Experimente:
+
+| Você diz | O que acontece |
+|---|---|
+| *"Como tá minha agenda hoje?"* | lê o calendário e resume |
+| *"Tem algo urgente no e-mail?"* | tria a caixa e destaca o que importa |
+| *"Rascunha uma resposta pro João, mais firme"* | escreve o rascunho e mostra |
+| *"Acha o contrato da empresa X"* | procura nos seus arquivos |
+| *"O que rolou com o cliente Y no zap?"* | lê a conversa e resume |
+| *"Lembra que reunião só de manhã"* | guarda na memória |
+| *"Em que pé está o projeto Z?"* | recupera o que já foi conversado |
+
+### A regra do sinal verde
+
+Isto é o mais importante para confiar nela:
+
+| A Íris faz sozinha | A Íris pede seu OK antes |
+|---|---|
+| ler e-mail, agenda, arquivos e conversas | **enviar** e-mail ou mensagem |
+| rascunhar respostas | **marcar / remarcar / desmarcar** compromisso |
+| resumir, buscar, lembrar | **mover / renomear** arquivo |
+| — | **apagar** qualquer coisa (sempre) |
+
+E ela **nunca inventa**: se não sabe, diz que não sabe.
+
+---
+
+## Onde ficam suas coisas
+
+Tudo em `C:\Users\<você>\Claude\iris\`:
+
+| Pasta / arquivo | O que guarda |
+|---|---|
+| `preferences.md` | **como** ela trabalha com você: nome, tom, formato, red-lines |
+| `memory/` | **o que** ela sabe: pessoas, projetos, decisões, combinados |
+| `identity/` | **quem** você é — perfil, prioridades, voz (camada premium, opcional) |
+
+Os arquivos do programa ficam em `C:\Iris` (plugin, MCP do WhatsApp e Node).
+
+A cada sessão, um hook `SessionStart` carrega a persona, as preferências e o
+índice da memória — por isso ela não te faz repetir as coisas.
+
+---
+
+## Capacidades
+
+| Capacidade | O que cobre |
+|---|---|
+| **Agenda** | compromissos, disponibilidade, preparo de reunião, conflitos |
+| **E-mail** | triagem da caixa, resumo, rascunho e envio sob aprovação |
+| **WhatsApp** | leitura de conversas e envio 1:1 controlado |
+| **Organização** | achar e arrumar arquivos, padronizar nomes |
+| **Memória** | pessoas, projetos, decisões e combinados |
+| **Briefing** | resumo diário automático (via tarefa agendada) |
+
+As capacidades **disparam pela conversa** — você não escolhe nenhuma delas.
+
+---
+
+## Se algo der errado
+
+| Sintoma | O que fazer |
+|---|---|
+| O script nem começa | rode o `Unblock-File` da linha de instalação; use `-ExecutionPolicy Bypass` |
+| `claude` não é reconhecido logo após instalar | feche e reabra o PowerShell (o PATH só atualiza em terminal novo) |
+| Ferramentas do WhatsApp não aparecem | reinicie o Claude; confirme que `C:\Iris\whatsapp-mcp\session` existe |
+| Ela não vê agenda nem e-mail | os connectors não foram autorizados — ver [2.1](#21-autorizar-gmail-e-google-calendar-obrigatório) |
+| Instalou versão antiga do plugin | o Cowork só atualiza quando o `version` do `plugin.json` muda |
+| O briefing não chega | confirme a frase exata na tarefa e que o Claude estava aberto no horário |
+
+---
+
+## Desinstalar
+
+```powershell
+claude plugin uninstall iris@iris
+claude plugin marketplace remove iris
+claude mcp remove --scope user whatsapp
+Remove-Item C:\Iris -Recurse -Force
+```
+
+Isso não apaga suas preferências e memória. Para remover também:
+
+```powershell
+Remove-Item "$env:USERPROFILE\Claude\iris" -Recurse -Force
+```
+
+---
+
+## Para o operador
+
+### Arquitetura em duas camadas
+
+| Camada | O que é | Onde vive | Muda por cliente? |
+|---|---|---|---|
+| **Plugin** (este repo) | persona + skills + connectors | repo GitHub público | ❌ nunca |
+| **Identidade + memória** | perfil, relações, prioridades, voz | pasta local no PC do cliente | ✅ sim |
+
+O plugin é **idêntico para todos**. Toda variação vive na camada local.
+**Nenhum segredo de cliente entra neste repositório.**
+
+As ferramentas de build da identidade ficam num plugin **privado e separado** —
+assim o cliente só encontra capacidades de conversa, nunca skills de configuração.
+
+### Gerar e publicar o instalador
+
+Ver [`download/LEIA-ME.md`](download/LEIA-ME.md).
+
+### Estrutura do repositório
+
 ```
 .claude-plugin/
   plugin.json        manifesto do plugin
   marketplace.json   catálogo (este repo é marketplace + plugin)
 .mcp.json            connectors declarados (Gmail, Google Calendar)
 context/persona.md   persona base sempre-ativa
-hooks/hooks.json     injeta a persona a cada sessão (SessionStart)
+hooks/hooks.json     SessionStart: persona + identidade + preferências/memória
 skills/              capacidades (disparam por conversa)
+  agenda/  email/  whatsapp/  organizacao/  memoria/  briefing/  start-iris/
+download/            instalador para Windows (scripts; o .zip vai em Releases)
 ```
