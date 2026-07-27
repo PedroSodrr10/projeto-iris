@@ -13,3 +13,6 @@ Thumbs.db
 
 # Clone órfão (tooling intermediário, fora do escopo do plugin)
 projeto-iris/
+
+# Pacote do instalador (~54 MB) — publicado como asset de Release, nunca commitado
+download/dist/
